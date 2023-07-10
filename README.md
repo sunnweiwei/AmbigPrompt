@@ -39,6 +39,12 @@ Evaluate the model:
 accelerate launch train.py --data_path data/ambig/dev.json --checkpoint out/ambig/model/9.py --do_train false --do_eval true
 ```
 
+## Pseudo MultiQA Data Construction
+Train a span selection baseline using script in [shmsw25/AmbigQA](https://github.com/shmsw25/AmbigQA/tree/main/codes).
+Predict answers on each of the 100 retrieved passages.
+Detailed scripts and produced datasets coming soon.
+
+
 ## Cite
 ```
 @inproceedings{Sun2023IsCG,
