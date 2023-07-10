@@ -698,14 +698,26 @@ def load_prediction(prediction_path, ids):
     return prediction
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--reference_path', type=str, required=True)
-    parser.add_argument('--prediction_path', type=str, required=True)
-    args = parser.parse_args()
+import csv
 
-    reference = load_reference(args.reference_path)
-    ids = set([d["id"] for d in reference])
-    prediction = load_prediction(args.prediction_path, ids)
-    evaluation = QAPairEvaluation(reference, prediction)
-    evaluation.print_all_metrics()
+def load_data(file, collection='wiki-text'):
+    csv.register_dialect('tsv_dialect', delimiter='\t', quoting=csv.QUOTE_ALL)
+    data = []
+    with open(file, "r") as wf:
+        reader = csv.DictReader(wf, fieldnames=['id', 'text', 'title'], dialect='tsv_dialect')
+        for row in reader:
+            data.append(dict(row))
+    csv.unregister_dialect('tsv_dialect')
+    data = data[1:]
+    print(len(data))
+    print(data[0])
+    data = [{'pid': i, 'id': item['id'], 'text': item['text'], 'title': item['title']} for i, item in enumerate(data)]
+    passage = TextPassage(collection)
+    print('start write')
+    passage.write(data)
+    print('write done')
+    print(len(passage))
+
+
+if __name__ == "__main__":
+    load_data('data/wikipedia/psgs_w100.tsv')

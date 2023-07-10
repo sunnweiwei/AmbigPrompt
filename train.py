@@ -18,25 +18,6 @@ NUM_PASSAGES = 100
 replace_attention_forward(NUM_PASSAGES + 1)
 
 
-def load_data(file, collection='wiki-text'):
-    csv.register_dialect('tsv_dialect', delimiter='\t', quoting=csv.QUOTE_ALL)
-    data = []
-    with open(file, "r") as wf:
-        reader = csv.DictReader(wf, fieldnames=['id', 'text', 'title'], dialect='tsv_dialect')
-        for row in reader:
-            data.append(dict(row))
-    csv.unregister_dialect('tsv_dialect')
-    data = data[1:]
-    print(len(data))
-    print(data[0])
-    data = [{'pid': i, 'id': item['id'], 'text': item['text'], 'title': item['title']} for i, item in enumerate(data)]
-    passage = TextPassage(collection)
-    print('start write')
-    passage.write(data)
-    print('write done')
-    print(len(passage))
-
-
 class FiD(T5ForConditionalGeneration):
     def _prepare_encoder_decoder_kwargs_for_generation(self, input_ids, model_kwargs, *args, **kwargs):
         if "encoder_outputs" not in model_kwargs:
@@ -311,7 +292,6 @@ def parse_args():
     parser.add_argument('--data_path', type=str, default='data/ambig/train.json')
     parser.add_argument('--save_path', type=str, default='out/ambig/model')
     parser.add_argument('--checkpoint', type=str, default='out/ambig/model/9.pt')
-    parser.add_argument('--load_wikipedia', type=bool, default=False)
     parser.add_argument('--do_train', type=bool, default=True)
     parser.add_argument('--do_eval', type=bool, default=True)
     args = parser.parse_args()
@@ -323,9 +303,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    if args.load_wikipedia:
-        # Load DPR Wikipedia to Redis Cache
-        load_data('data/wikipedia/psgs_w100.tsv')
     if args.do_train:
         run(data_path=args.data_path, save_path=args.save_path)
     if args.de_eval:
