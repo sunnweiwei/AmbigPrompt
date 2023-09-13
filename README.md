@@ -7,7 +7,7 @@ Code for paper [Answering Ambiguous Questions via Iterative Prompting](https://a
 ## Prepare Data
 Download the Wikipedia text splitted by 100 words from [DPR](https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz), put it under `data/wikipedia/psgs_w100.tsv`, and run the following command to build Wikipedia's redis cache.
 ```bash
-python tool.py
+python dataset.py
 ```
 
 Download NQ and AmbigNQ data from [shmsw25/AmbigQA](https://github.com/shmsw25/AmbigQA) and put it under `data/nq` and `data/ambig`
