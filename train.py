@@ -11,7 +11,7 @@ import argparse
 import csv
 import os
 from collections import defaultdict
-from tools import TextPassage, FiDT5, get_f1
+from dataset import TextPassage, FiDT5, get_f1
 
 
 NUM_PASSAGES = 100
