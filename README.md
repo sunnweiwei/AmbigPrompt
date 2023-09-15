@@ -36,7 +36,7 @@ accelerate launch train.py --data_path data/ambig/train.json --save_path out/amb
 
 Evaluate the model:
 ```bash
-accelerate launch train.py --data_path data/ambig/dev.json --checkpoint out/ambig/model/9.py --do_train false --do_eval true
+accelerate launch train.py --data_path data/ambig/dev.json --checkpoint out/ambig/model/9.pt --do_train false --do_eval true
 ```
 
 ## Pseudo MultiQA Data Construction
