@@ -280,7 +280,7 @@ def test(data_path, save_path):
         score['true_len'].append(answer_num)
         if answer_num > 1:
             score['multi'].append(f1s_wo_dupli)
-            idx += 1
+        idx += 1
         tk0.set_postfix(**{k: sum(v) / len(v) * 100 for k, v in score.items()})
 
     print({k: sum(v) / len(v) * 100 for k, v in score.items()})
