@@ -87,8 +87,34 @@ def encode_query(file):
     return query_embedding
 
 
+def encode_corpus():
+    tokenizer = AutoTokenizer.from_pretrained('Luyu/co-condenser-wiki')
+    model = AutoModel.from_pretrained('Luyu/co-condenser-wiki')
+    model.load_state_dict(torch.load('out/dense/pytorch_model.bin', map_location=lambda storage, loc: storage))
+
+    model = model.cuda()
+    model = DataParallel(model)
+    passage = TextPassage()
+    os.makedirs('out/dense/', exist_ok=True)
+    embedding = np.memmap('out/dense/corpus.dat', dtype='float32', mode='w+', shape=(len(passage), 768))
+    batch_size = 512
+    for i in tqdm(range(0, len(passage), batch_size), total=len(passage)):
+        batch = [f"{item['title']} . {item['text']}" for item in passage[i:i+batch_size]]
+        encoded_input = tokenizer(batch, padding=True, truncation=True, return_tensors='pt')
+        encoded_input = {k: v.cuda() for k, v in encoded_input.items()}
+        with torch.no_grad():
+            model_output = model(**encoded_input)
+            sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
+            sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
+        sentence_embeddings = sentence_embeddings.cpu().numpy()
+        embedding[i:i+batch_size, ] = sentence_embeddings
+
+
 def main(file):
     os.makedirs('out/dense/', exist_ok=True)
+    print('Encode Wikipedia corpus')
+    encode_corpus()
+    print('Encode query')
     queries = encode_query(file)
     passage = TextPassage()
     collection = np.memmap(f'out/dense/corpus.dat', dtype='float32', mode="r", shape=(len(passage), 768))
